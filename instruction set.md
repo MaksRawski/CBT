@@ -1,4 +1,5 @@
 REGISTER OPCODES
+
 %00-ra
 %01-rb
 %10-sp
@@ -6,7 +7,7 @@ REGISTER OPCODES
 
 INSTRUCTION OPCODES
 instruction				representation		description
--------------------------------------------------------------------------------
+
 %0000 00 00 		nop					-no operation
 %0001 00 10			mov ra,sp			-move value from sp to ra
 

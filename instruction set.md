@@ -97,7 +97,7 @@ This cpu has 32 instructions available though they are all based upon 4 basic op
 ## ALU OPERATIONS
 
 syntax: %11 src operation opcode 
-see [table above](#ALU-OPCODES) for opcodes
+see [table above](#alu-opcodes) for opcodes
 
 
 ## EXTRA OPCODES

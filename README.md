@@ -1,6 +1,6 @@
 # CBT - CPU BASED (ON) TTL
 
-Somewhat documentation for computer based on [James Bates's design](https://www.youtube.com/watch?v=gqYFT6iecHw) however i should not that [Ben Eater's series](https://www.youtube.com/playlist?list=PLowKtXNTBypGqImE405J2565dvjafglHU) was the inspiration for this project. Notable things about my design: 
+Somewhat documentation for cpu based on [James Bates's design](https://www.youtube.com/watch?v=gqYFT6iecHw) however i should not that [Ben Eater's series](https://www.youtube.com/playlist?list=PLowKtXNTBypGqImE405J2565dvjafglHU) was the inspiration for this project. Notable things about my design: 
 
 * 8 bit program memory, theoretically it is 16 bit though program counter is only 8 bits. Program memory is stored on replaceable EEPROM which serves as cartridge in some sense,
 * 15 bit user memory, first bit is used to indicate whether access is given to ram or rom, 

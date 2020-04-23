@@ -1,6 +1,6 @@
 ## notes for microcode 
 * control word is 31 bits wide.
-* active low except MI and PCC
+* active low except MI, PCC and ALU inputs
 
 ## Control word
 

@@ -1,0 +1,3 @@
+.vscode
+genMicrocode/microcode/*
+genMicrocode/__pycache__

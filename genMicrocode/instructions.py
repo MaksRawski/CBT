@@ -54,15 +54,18 @@ def load(opcode, utime, flags):
     CF=(flags&0b0001)>>0
     HF=(flags&0b0010)>>1
 
-    if src==0b110 and CF:
-       data={
-            2: RO[dst]|PCI
-        }
+    if src==0b110:
+        if CF:
+            data={2: RO[dst]|PCI}
+        else:
+            data={}
 
-    elif src==0b111 and HF:
-        data={
-            2: RO[dst]|PCI
-        }
+    elif src==0b111:
+        if HF:
+            data={2: RO[dst]|PCI}
+        else:
+            data={}
+
 
     elif src==0b100:
         data={
@@ -91,15 +94,17 @@ def sto(opcode, utime, flags):
     OF=(flags&0b0100)>>2
     ZF=(flags&0b1000)>>3
 
-    if src==0b110 and OF:
-       data={
-            2: RO[dst]|PCI
-        }
+    if src==0b110:
+        if OF:
+            data={2: RO[dst]|PCI}
+        else:
+            data={}
 
-    if src==0b111 and ZF:
-       data={
-            2: RO[dst]|PCI
-        }
+    if src==0b111:
+        if ZF:
+            data={2: RO[dst]|PCI}
+        else:
+            data={}
 
     elif dst==0b100:
         data={

@@ -28,8 +28,19 @@ def mov(opcode, utime, flags):
             2: 0
         }
 
-    elif src==0b110: #src is lcd but reading from lcd is impossible therefore halt (for every ut)
-        return HLT
+    elif src==0b110: #mov to lcd as a command
+        if dst==0b111: #actual src is 111-immediate operand
+            data={
+                2: PCC,
+                3: PCO|LAI,
+                4: MO|LCE|LCM
+            }
+        elif dst==0b110: #00 110 110 - straight up bs
+            return HLT
+        else:
+            data={
+                2: RO[dst]|LCM|LCE # use dst as a command for lcd
+            }
 
     elif src==0b111: #src is imm, data opcode
         data={

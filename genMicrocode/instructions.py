@@ -2,7 +2,7 @@ from variables import *
 
 #invert all inputs despite MI, PCC, ALU inputs and obviously the one(s) given that should be activated
 def CW(x):
-    return int(x)^((2**31-1)^MI^PCC^AL0^AL1^AL2^AL3^ALM)
+    return int(x)^((2**31-1)^MI^PCC^AL0^AL1^AL2^AL3)
 
 def addData(data,opcode,ut,flag):
     DATA[(flag<<12)+(ut<<8)+(opcode)]=CW(data)
@@ -145,23 +145,23 @@ def alu(opcode, utime, flags):
     CF=flags&0b0001
 
     ops={
-        0: ALM|ALE, # NOT A
-        1: ALM|AL0|ALE, # A NOR B
-        2: ALM|AL2|ALE, # A NAND B
-        3: ALM|AL2|AL0|ALE, # NOT B
-        4: ALM|AL2|AL1|ALE, # A XOR B
-        5: ALM|AL3|AL0|ALE, # A XNOR B
-        6: ALM|AL3|AL1|AL0|ALE, # A AND B
-        7: ALM|AL3|AL2|AL1|ALE, # A OR B
+        0: ALE, # NOT A
+        1: AL0|ALE, # A NOR B
+        2: AL2|ALE, # A NAND B
+        3: AL2|AL0|ALE, # NOT B
+        4: AL2|AL1|ALE, # A XOR B
+        5: AL3|AL0|ALE, # A XNOR B
+        6: AL3|AL1|AL0|ALE, # A AND B
+        7: AL3|AL2|AL1|ALE, # A OR B
 
-        8:  AL3|AL0|ALE, # ADD A,B
-        9:  (ALC*(CF^1))|AL3|AL0|ALE, # ADC A,B ALC=CF`
-        10: ALC|AL2|AL1|ALE, # SUB A,B
-        11: (ALC*(CF))|AL2|AL1|ALE, # SBC A,B ALC=CF
-        12: ALC|AL2|AL1|ALE, # CMP A,B
-        13: ALC|ALE, # INC A
-        14: AL3|AL2|AL1|AL0|ALE, # DEC A
-        15: AL3|AL2|ALE # DBL A/SHIFT LEFT A
+        8:  ALM|AL3|AL0|ALE, # ADD A,B
+        9:  ALM|ALC*(CF^1))|AL3|AL0|ALE, # ADC A,B ALC=CF`
+        10: ALM|ALC|AL2|AL1|ALE, # SUB A,B
+        11: ALM|ALC*(CF))|AL2|AL1|ALE, # SBC A,B ALC=CF
+        12: ALM|ALC|AL2|AL1|ALE, # CMP A,B
+        13: ALM|ALC|ALE, # INC A
+        14: ALM|AL3|AL2|AL1|AL0|ALE, # DEC A
+        15: ALM|AL3|AL2|ALE # DBL A/SHIFT LEFT A
     }
     
     data={

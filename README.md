@@ -5,7 +5,7 @@ Notable things about my design:
 
 * 16 bit memory, 1st bit decides whether we are using ROM or RAM
 * Variable microtimes, SR (Step Reset) resets step counter once the instruction is done. No wasted cycles! (except NOP)
-* 8/15 bit program memory, theoretically it is 15 bit though program counter is only 8 bits. programs could change HMAR themselves allowing to use more than 256 bytes.
+* 15 bit program memory however jump instructions (for now) only allow jumping in the same 256 bytes, they don't change higher 8 bits.
 * Program memory is stored on replaceable EEPROM which serves as cartridge in some sense,
 * 32KiB of RAM,
 * 256B of stack

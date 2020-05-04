@@ -16,7 +16,7 @@ Notable things about my design:
 
 ## Disclaimer 
 
-This whole project isn't actually built yet meaning that things in this repo are just ideas, therefore it might change on the way or might not be interesting for a "final user" as at its current state it contains a lot of useless information needed for microcode to be implemented.
+This whole project isn't actually built yet meaning that things in this repo are just ideas, therefore it might change on the way or might not be interesting for a "final user" as at its current state it contains a lot of way too specific information.
 
 
 For documentation about specific parts check out [wiki](https://gitlab.com/i4mz3r0/cbt/-/wikis/home).

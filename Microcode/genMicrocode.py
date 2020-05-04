@@ -12,13 +12,17 @@ for opcode in range(2**8):
             if ut in [0,1,2]: #first 3 steps of every instruction is to actually fetch it
                 addData(fetch(ut),opcode,ut,flag)
             else:
-                addData({
-                0: mov,
-                1: load,
-                2: sto,
-                3: alu,
-                }[opcode>>6](opcode,ut,flag),
-                opcode,ut,flag)
+                addData(
+                    {
+                        0: mov,
+                        1: load,
+                        2: sto,
+                        3: alu,
+                    }[opcode>>6]
+                    (opcode,ut,flag), # function's location parameters
+                    opcode,ut,flag # addData's location parameters
+                )
+
     if (opcode+1)%64==0:
         print("Writing "+{
         0: "mov's",

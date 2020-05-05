@@ -1,3 +1,3 @@
 .vscode
-Microcode/microcode/*
 Microcode/__pycache__
+Assembler/__pycache__

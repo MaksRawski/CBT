@@ -1,0 +1,159 @@
+#cpudef{
+	#bits 8
+
+	#tokendef reg{
+		a = 0
+		ra= 0
+		b = 1
+		rb= 1
+		c = 2
+		rc= 2
+		d = 3
+		rd= 3
+		sp= 4
+		pc= 5
+		lcd=6
+
+		lcdc=10
+	}
+	#tokendef regPair{
+		dc = 0
+		cb = 1
+		ba = 2
+		da = 3
+	}
+
+	nop -> 0x00
+	hlt -> 0b00 @ 0b110 @ 0b110
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;											MOVES												   ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+
+	; write immediate value makes src = 111 and gives value in next byte
+	mov {dst: reg},{src} -> {
+		assert(src<=255)
+		0b00 @ dst[2:0] @ 0b111 @
+		src[7:0]
+	}
+
+	mov {dst: regPair},[{src}] -> 0b00 @ 0b111 @ 0b0 @ dst[1:0] @ src[15:0]
+	mov {dst: regPair},{src}   -> 0b00 @ 0b111 @ 0b0 @ dst[1:0] @ src[15:0]
+
+	; writing to lcd as command reverses the syntax
+	mov {dst: reg},{src: reg} -> {
+		assert(dst == 10) 
+		0b00 @ src[2:0] @ 0b110
+	}
+
+	; normal mov
+	mov {dst: reg},{src: reg} -> 0b00 @ dst[2:0] @ src[2:0] ; registers are 3 bits wide
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;											JUMPS												   ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+
+	; jumps are possible only to constant memmory locations
+	jmp {dst} ->{
+		0b00 @ 0b101 @ 0b111 @
+		dst[7:0] @ dst[15:8] 
+	}
+
+	jc {dst} ->{
+		0b00 @ 0b101 @ 0b000 @
+		dst[7:0] @ dst[15:8] 
+	}
+
+	jh {dst} ->{
+		0b00 @ 0b101 @ 0b001 @
+		dst[7:0] @ dst[15:8] 
+	}
+
+	jo {dst} ->{
+		0b00 @ 0b101 @ 0b010 @
+		dst[7:0] @ dst[15:8] 
+	}
+	jz {dst} ->{
+		0b00 @ 0b101 @ 0b011 @
+		dst[7:0] @ dst[15:8] 
+	}
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;											LOADS												   ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+
+	load {dst: reg},[{src}] 		 ->	0b01 @ dst[2:0] @ 0b111 @ src[15:0]
+	load {dst: reg},[{src: regPair}] ->	0b01 @ dst[2:0] @ 0b0 @ src[1:0]
+
+	load {dst: reg},{src}		   -> 0b01 @ dst[2:0] @ 0b111 @ src[15:0]
+	load {dst: reg},{src: regPair} -> 0b01 @ dst[2:0] @ 0b0 @ src[1:0]
+
+	pop {dst} -> 0b01 @ dst[2:0] @ 0b100
+
+	ret -> 0b01 @ 0b101 @ 0b100
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;											STORES												   ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	
+	store [{dst} ],{src: reg} 		  -> 0b10 @ 0b111 @ src[2:0] @ dst[15:0]
+	store [{dst: regPair}],{src: reg} -> 0b10 @ 0b0 @ dst[1:0] @ src[2:0]
+
+	push {dst} 		-> 0b10 @ 0b100 @ 0b111 @ dst[7:0]
+	push {dst: reg} -> 0b10 @ 0b100 @ dst[2:0]
+	
+	call {dst} -> {
+		0b10 @ 0b100 @ 0b101 @ ; push HPC and LPC
+		0b00 @ 0b101 @ 0b111 @ ; jump to dst
+		dst[15:0]
+	}
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	;											ALU													   ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+	not {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b0000 @ dst[1:0] }
+	not a   		-> { 					0b11 @ 0b0011 @ dst[1:0] }
+	
+	nor {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b0001 @ dst[1:0] }
+	nor {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b0001 @ dst[1:0] }
+
+	nand {dst:reg}   ->{ assert(dst<=0b11), 0b11 @ 0b0010 @ dst[1:0] }
+	nand {dst:reg},a ->{ assert(dst<=0b11), 0b11 @ 0b0010 @ dst[1:0] }
+
+	xor {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b0100 @ dst[1:0] }
+	xor {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b0100 @ dst[1:0] }
+
+	xnor {dst:reg}  -> { assert(dst<=0b11), 0b11 @ 0b0101 @ dst[1:0] }
+	xnor {dst:reg},a-> { assert(dst<=0b11), 0b11 @ 0b0101 @ dst[1:0] }
+
+	and {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b0110 @ dst[1:0] }
+	and {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b0110 @ dst[1:0] }
+
+	or {dst:reg}    -> { assert(dst<=0b11), 0b11 @ 0b0111 @ dst[1:0] }
+	or {dst:reg},a  -> { assert(dst<=0b11), 0b11 @ 0b0111 @ dst[1:0] }
+
+	add {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1000 @ dst[1:0] }
+	add {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b1000 @ dst[1:0] }
+
+	adc {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1001 @ dst[1:0] }
+	adc {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b1001 @ dst[1:0] }
+
+	sub {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1010 @ dst[1:0] }
+	sub {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b1010 @ dst[1:0] }
+
+	sbc {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1011 @ dst[1:0] }
+	sbc {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b1011 @ dst[1:0] }
+
+	cmp {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1100 @ dst[1:0] }
+	cmp {dst:reg},a -> { assert(dst<=0b11), 0b11 @ 0b1100 @ dst[1:0] }
+	cmp a,{dst:reg} -> { assert(dst<=0b11), 0b11 @ 0b1100 @ dst[1:0] }
+
+	inc {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1101 @ dst[1:0] }
+
+	dec {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1110 @ dst[1:0] }
+
+	dbl {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1111 @ dst[1:0] }
+	shl {dst:reg}   -> { assert(dst<=0b11), 0b11 @ 0b1111 @ dst[1:0] }
+
+}
+jmp main

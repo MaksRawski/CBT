@@ -14,7 +14,9 @@ mnemonics = {
 
 	'store':'10dstsrc',
 	'push': '10100src',
-	'call': '10100101'
+	'call': '10100101',
+	'.org':''
+
 }
 
 REGISTERS = {
@@ -35,6 +37,7 @@ REGISTERS = {
 	'pc':0b101,
 	
 	'lcd': 0b110,
+	'lcdc': 0b110,
 
 	'imm': 0b111
 }
@@ -110,8 +113,20 @@ def translate(mnemonic, dst, src, buffer, srci=False):
 			'mov',
 		]:
 		# check if src is imm
-			if srci!=False: # there is value for an immediate opcode, src=0b111
+			if srci!='NaN': # there is value for an immediate opcode, src=0b111
 				buffer.append(format(srci,'08b'))
 		elif (mnemonic == 'load' and REGISTERS[src] == 0b111) or (mnemonic == 'store' and REGISTERS[dst] == 0b111):
 			# do similar magic to jumps but with 'variables'
 			pass
+
+def strToNum(str):
+	if str.isdigit():
+		return int(str,10) 
+
+	elif str[1:]=='$' or str[:2]=='0x' or str[-1:]=='h':
+		return int(str,16)
+
+	elif str[1:]=='%' or str[:2]=='0b' or str[-1:]=='b':
+		return int(str,2)
+	else:
+		return "NaN"

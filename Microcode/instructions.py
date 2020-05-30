@@ -217,6 +217,10 @@ def sto(opcode, utime, flags):
     dst=(opcode&0b00111000)>>3
     src=(opcode&0b00000111)>>0
 
+    data=[
+
+    ]
+
     if dst<=0b011:
         # src = 0 xx 
         # xx==00 dc
@@ -295,23 +299,23 @@ def sto(opcode, utime, flags):
                 SPI|ALO
             ]
 
-        if dst==0b101:
-            #call
-            data=[
-                HAI, #set HMAR to 0xff
-                SPO|LAI, #set LMAR to value in SP
-                # MAR -> stack
+    elif dst==0b101:
+        #call
+        data=[
+            HAI, #set HMAR to 0xff
+            SPO|LAI, #set LMAR to value in SP
+            # MAR -> stack
 
-                HPO|MI, # push HPC
+            HPO|MI, # push HPC
 
-                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
-                SPI|ALO|LAI, # decrement LMAR and SP
+            SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
+            SPI|ALO|LAI, # decrement LMAR and SP
 
-                LPO|MI, # push LPC
+            LPO|MI, # push LPC
 
-                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
-                SPI|ALO # decrement SP
-            ]
+            SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
+            SPI|ALO # decrement SP
+        ]
 
     data.append(SR)
     try:

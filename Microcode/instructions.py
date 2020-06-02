@@ -87,11 +87,11 @@ def mov(opcode, utime, flags):
                 MO|DI|PCC,
                 MO|AI|PCC,
             ]
-
-    CF=(flags==0b0001)
-    HF=(flags==0b0010)
-    OF=(flags==0b0100)
-    ZF=(flags==0b1000)
+    # CF and HF are active low so they need to be inverted - xor'd with ones
+    CF=(flags&0b0001)^1
+    HF=(flags&0b0010)^1
+    OF=(flags&0b0100)
+    ZF=(flags&0b1000)
 
     # (conditional) jumps
     if dst==0b101:
@@ -329,7 +329,7 @@ def alu(opcode, utime, flags):
     op=(opcode&0b00111100)>>2
     src=opcode&0b00000011
 
-    CF=flags&0b0001
+    CF=(flags&0b0001)^1
 
     ops=[
         ALE, # NOT A

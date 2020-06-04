@@ -19,7 +19,7 @@ for opcode in range(2**8):
                         2: sto,
                         3: alu,
                     }[opcode>>6]
-                    (opcode,ut,flag), # function's location parameters
+                    (opcode,ut-3,flag), # function's location parameters
                     opcode,ut,flag # addData's location parameters
                 )
 

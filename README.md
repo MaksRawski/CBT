@@ -17,7 +17,7 @@ Notable things about my design:
 For documentation about specific parts check out [wiki](https://gitlab.com/i4mz3r0/cbt/-/wikis/home).
 
 ## Finally done!
-![CBT](cbt.jpg)
+![CBT.jpg](CBT.jpg)
 On the picture it's missing:
 * Stack pointer's LEDS
 * Flags, which aren't yet hooked up to EEPROMS

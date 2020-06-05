@@ -40,7 +40,9 @@ def mov(opcode, utime, flags):
                 MO|LCE|LCM|PCC
             ]
         elif dst==0b110: #00 110 110 - straight up bs
-            return HLT
+            data=[
+                 HLT
+            ]
         else:
             data=[
                 RO[dst]|LCE|LCM # use dst as a command for lcd
@@ -61,31 +63,51 @@ def mov(opcode, utime, flags):
         if src&0b11==0b00:
             data=[
                 HPO|HAI,
-                LPO|LAI,
-                MO|DI|PCC,
-                MO|CI|PCC,
+                LPO|LAI|PCC,
+
+                MO|DI,
+
+                HPO|HAI,
+                LPO|LAI|PCC,
+
+                MO|CI,
             ]
 
         elif src&0b11==0b01:
             data=[
                 HPO|HAI,
-                LPO|LAI,
-                MO|CI|PCC,
-                MO|BI|PCC,
+                LPO|LAI|PCC,
+
+                MO|CI,
+
+                HPO|HAI,
+                LPO|LAI|PCC,
+
+                MO|BI,
             ]
         elif src&0b11==0b10:
             data=[
                 HPO|HAI,
-                LPO|LAI,
-                MO|BI|PCC,
-                MO|AI|PCC,
+                LPO|LAI|PCC,
+
+                MO|BI,
+
+                HPO|HAI,
+                LPO|LAI|PCC,
+
+                MO|AI,
             ]
         elif src&0b11==0b11:
             data=[
                 HPO|HAI,
-                LPO|LAI,
-                MO|DI|PCC,
-                MO|AI|PCC,
+                LPO|LAI|PCC,
+
+                MO|DI,
+
+                HPO|HAI,
+                LPO|LAI|PCC,
+
+                MO|AI,
             ]
     # CF and HF are active low so they need to be inverted - xor'd with ones
     CF=(flags&0b0001)^1
@@ -122,7 +144,6 @@ def load(opcode, utime, flags):
     src=(opcode&0b00000111)>>0
 
     data=[
-
         
     ]
 
@@ -161,12 +182,12 @@ def load(opcode, utime, flags):
     elif src==0b111:
         data=[
             LPO|LAI,
-            HPO|HAI, #first byte provided is now in memory (LMAR)
+            HPO|HAI|PCC, #first byte provided is now in memory (LMAR)
 
-            MO|ALM|ALE|PCC, #save HMAR into alu
+            MO|ALM|ALE, #save HMAR into alu
 
             LPO|LAI,
-            HPO|HAI, #second byte provided is now in memory (HMAR)
+            HPO|HAI|PCC, #second byte provided is now in memory (HMAR)
 
             MO|HAI,  #HMAR is now what it's supposed to be
             ALO|LAI, #LMAR is now what it's supposed to be 
@@ -266,7 +287,8 @@ def sto(opcode, utime, flags):
             MO|LAI,  #LMAR is now what it's supposed to be
             ALO|HAI, #HMAR is now what it's supposed to be 
 
-            MI|RO[src] #store src
+            MI|RO[src]|PCC #store src 
+
         ]
 
     elif dst==0b100:

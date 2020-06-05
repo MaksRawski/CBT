@@ -21,3 +21,4 @@ For documentation about specific parts check out [wiki](https://gitlab.com/i4mz3
 On the picture it's missing:
 * Stack pointer's LEDS
 * Flags, which aren't yet hooked up to EEPROMS
+* Button to reset all modules

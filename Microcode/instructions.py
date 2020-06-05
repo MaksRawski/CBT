@@ -2,7 +2,7 @@ from variables import *
 
 #invert all inputs despite MI, PCC, ALU inputs and obviously the one(s) given that should be activated
 def CW(x = 0):
-    return ((1<<31)-1)^MI^PCC^AL0^AL1^AL2^AL3^int(x)
+    return ((1<<32)-1)^MI^PCC^AL0^AL1^AL2^AL3^int(x)
 
 def addData(data,opcode,ut,flag):
     DATA[(flag<<12)+(ut<<8)+(opcode)]=CW(data)
@@ -121,16 +121,19 @@ def mov(opcode, utime, flags):
             data=[
                 LPO|LAI|PCC,
                 HPO|HAI,
-                MO|ALM|ALE, #dst LPC is in memory but we save it in alu
+                MO|ALM|ALE, #dst HPC is in memory but we save it in alu
 
                 LPO|LAI|PCC,
                 HPO|HAI,
-                MO|HPI,
+                MO|LPI,
 
-                ALO|LPI
+                ALO|HPI
             ]
         else:
-            data=[]
+            data=[
+                PCC,
+                PCC # skip over the next two bytes which contain destionation address
+            ]
   
     data.append(SR)
     try:
@@ -277,17 +280,17 @@ def sto(opcode, utime, flags):
     elif dst==0b111:    
         data=[
             LPO|LAI,
-            HPO|HAI, #first byte provided is now in memory (LMAR)
+            HPO|HAI|PCC, #first byte provided is now in memory (HMAR)
 
-            MO|ALM|ALE|PCC, #save HMAR into alu
+            MO|ALM|ALE, #save HMAR into alu
 
             LPO|LAI,
-            HPO|HAI, #second byte provided is now in memory (HMAR)
+            HPO|HAI|PCC, #second byte provided is now in memory (LMAR)
 
             MO|LAI,  #LMAR is now what it's supposed to be
             ALO|HAI, #HMAR is now what it's supposed to be 
 
-            MI|RO[src]|PCC #store src 
+            MI|RO[src] #store src 
 
         ]
 

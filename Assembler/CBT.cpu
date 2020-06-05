@@ -32,7 +32,7 @@
 
 	; write immediate value makes src = 111 and gives value in next byte
 	mov {dst: reg},{src} -> {
-		assert(src<=255)
+		assert(dst!=10)
 		0b00 @ dst[2:0] @ 0b111 @
 		src[7:0]
 	}
@@ -44,6 +44,12 @@
 	mov {dst: reg},{src: reg} -> {
 		assert(dst == 10) 
 		0b00 @ src[2:0] @ 0b110
+	}
+	
+	mov {dst: reg},{src} -> {
+		assert(dst == 10) 
+		0b00 @ 0b111 @ 0b110 @
+		src[7:0]
 	}
 
 	; normal mov

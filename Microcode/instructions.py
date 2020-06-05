@@ -99,7 +99,7 @@ def mov(opcode, utime, flags):
             data=[
                 LPO|LAI|PCC,
                 HPO|HAI,
-                MO|ALE, #dst LPC is in memory but we save it in alu
+                MO|ALM|ALE, #dst LPC is in memory but we save it in alu
 
                 LPO|LAI|PCC,
                 HPO|HAI,
@@ -163,7 +163,7 @@ def load(opcode, utime, flags):
             LPO|LAI,
             HPO|HAI, #first byte provided is now in memory (LMAR)
 
-            MO|ALE|PCC, #save HMAR into alu
+            MO|ALM|ALE|PCC, #save HMAR into alu
 
             LPO|LAI,
             HPO|HAI, #second byte provided is now in memory (HMAR)
@@ -200,7 +200,7 @@ def load(opcode, utime, flags):
 
                 LPI|MO,  #pop the value into LPC
 
-                SPO|ALC|ALE, #increment SP,by default S=0000 M=L Cn=L
+                SPO|ALM|ALC|ALE, #increment SP,by default S=0000 M=L Cn=L
                 ALO|SPI,
 
                 HPI|MO #pop the other value off stack into HPC
@@ -258,7 +258,7 @@ def sto(opcode, utime, flags):
             LPO|LAI,
             HPO|HAI, #first byte provided is now in memory (LMAR)
 
-            MO|ALE|PCC, #save HMAR into alu
+            MO|ALM|ALE|PCC, #save HMAR into alu
 
             LPO|LAI,
             HPO|HAI, #second byte provided is now in memory (HMAR)
@@ -275,7 +275,7 @@ def sto(opcode, utime, flags):
             data=[
                 HPO|HAI,
                 LPO|LAI,
-                MO|ALE, # save given byte in alu
+                MO|ALM|ALE, # save given byte in alu
 
                 HAI, #set HMAR to 0xff
                 SPO|LAI, #set LMAR to value in SP

@@ -201,14 +201,11 @@ def load(opcode, utime, flags):
     elif src==0b100:
         #pop into register
         data=[ 
-            AL1|AL0|ALE, #set alu to minus 1/0xFF (see 74181 docuemntation for details)
-            ALO|HAI, #set HMAR to 0xff
+            HAI, #set HMAR to 0xff
 
             SPO|ALM|ALC|ALE, #increment SP,by default S=0000 M=L Cn=L
-            ALO|SPI,
+            SPI|ALO|LAI, # increment SP and LMAR
 
-            SPO|LAI, #set LMAR to value in SP
-            
             MO|RI[dst]  #pop the value into dst register
             
         ]
@@ -216,8 +213,7 @@ def load(opcode, utime, flags):
         if dst==0b101:
             #ret
             data=[
-                AL1|AL0|ALE, #set alu to minus 1/0xFF (see 74181 docuemntation for details)
-                ALO|HAI, #set HMAR to 0xff
+                HAI, #set HMAR to 0xff
 
                 SPO|ALM|ALC|ALE, #increment SP,by default S=0000 M=L Cn=L
                 SPI|ALO|LAI, # increment SP and LMAR
@@ -225,7 +221,7 @@ def load(opcode, utime, flags):
                 LPI|MO,  #pop the value into LPC
 
                 SPO|ALM|ALC|ALE, #increment SP,by default S=0000 M=L Cn=L
-                ALO|SPI,
+                SPI|ALO|LAI, # increment SP and LMAR
 
                 HPI|MO #pop the other value off stack into HPC
             ]
@@ -311,11 +307,28 @@ def sto(opcode, utime, flags):
                 SPI|ALO
             ]
 
+        elif src == 0b101:
+            #call
+            data=[
+                HAI|PCC, #set HMAR to 0xff
+                SPO|LAI|PCC, #set LMAR to value in SP
+                # MAR -> stack
+                PCC,
+                HPO|MI, # push HPC
+
+                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
+                SPI|ALO|LAI, # decrement LMAR and SP
+
+                LPO|MI, # push LPC
+
+                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
+                SPI|ALO # decrement SP
+            ]
+
         
         else: #push src register
             data=[
-                AL1|AL0|ALE, #set alu to minus 1/0xFF (see 74181 documentation for details)
-                ALO|HAI, #set HMAR to 0xff
+                HAI, #set HMAR to 0xff
                 SPO|LAI, #set LMAR to value in SP
 
                 RO[src]|MI, #push the register onto stack 
@@ -323,24 +336,6 @@ def sto(opcode, utime, flags):
                 SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
                 SPI|ALO
             ]
-
-    elif dst==0b101:
-        #call
-        data=[
-            HAI, #set HMAR to 0xff
-            SPO|LAI, #set LMAR to value in SP
-            # MAR -> stack
-
-            HPO|MI, # push HPC
-
-            SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
-            SPI|ALO|LAI, # decrement LMAR and SP
-
-            LPO|MI, # push LPC
-
-            SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
-            SPI|ALO # decrement SP
-        ]
 
     data.append(SR)
     try:

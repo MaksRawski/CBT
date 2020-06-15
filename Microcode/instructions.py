@@ -248,29 +248,69 @@ def sto(opcode, utime, flags):
         # xx==10 ba
         # xx==11 da
         if dst==0b00:
-            data=[
-                DO|HAI,
-                CO|LAI,
-                MI|RO[src]
-            ]
+            if src==0b111:
+                data=[
+                    MO|ALM|ALE,
+
+                    DO|HAI,
+                    CO|LAI,
+
+                    MI|ALO
+                ]
+            else:
+                data=[
+                    DO|HAI,
+                    CO|LAI,
+                    MI|RO[src]
+                ]
         elif src==0b01:
-            data=[
-                CO|HAI,
-                BO|LAI,
-                MI|RO[src]
-            ]
+            if src==0b111:
+                data=[
+                    MO|ALM|ALE,
+
+                    CO|HAI,
+                    BO|LAI,
+
+                    MI|ALO
+                ]
+            else:
+                data=[
+                    CO|HAI,
+                    BO|LAI,
+                    MI|RO[src]
+                ]
         elif src==0b10:
-            data=[
-                BO|HAI,
-                AO|LAI,
-                MI|RO[src]
-            ]
+            if src==0b111:
+                data=[
+                    MO|ALM|ALE,
+
+                    BO|HAI,
+                    AO|LAI,
+
+                    MI|ALO
+                ]
+            else:
+                data=[
+                    BO|HAI,
+                    AO|LAI,
+                    MI|RO[src]
+                ]
         elif src==0b11:
-            data=[
-                DO|HAI,
-                AO|LAI,
-                MI|RO[src]
-            ]
+            if src==0b111:
+                data=[
+                    MO|ALM|ALE,
+
+                    DO|HAI,
+                    AO|LAI,
+
+                    MI|ALO
+                ]
+            else:
+                data=[
+                    DO|HAI,
+                    AO|LAI,
+                    MI|RO[src]
+                ]
         
 
     elif dst==0b111:    
@@ -310,19 +350,23 @@ def sto(opcode, utime, flags):
         elif src == 0b101:
             #call
             data=[
-                HAI|PCC, #set HMAR to 0xff
-                SPO|LAI|PCC, #set LMAR to value in SP
+                HAI, #set HMAR to 0xff
+                SPO|LAI, #set LMAR to value in SP
                 # MAR -> stack
-                PCC,
                 HPO|MI, # push HPC
 
                 SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
                 SPI|ALO|LAI, # decrement LMAR and SP
+                
+                LPO|ALM|ALC|ALE,
+                ALO|ALM|ALC|ALE,
+                ALO|ALM|ALC|ALE,
 
-                LPO|MI, # push LPC
+                ALO|MI,
 
                 SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
                 SPI|ALO # decrement SP
+
             ]
 
         

@@ -380,10 +380,15 @@ def alu(opcode, utime, flags):
         ALM|AL3|AL2|ALE # DBL A/SHIFT LEFT A
     ]
     
-    data=[
-        RO[src]|ops[op],
-        ALO|RI[src] #output of ALU operation goes to src register
-    ]
+    if op==0b1100:
+        data=[
+            RO[src]|ops[op]
+        ]
+    else:
+        data=[
+            RO[src]|ops[op],
+            ALO|RI[src] #output of ALU operation goes to src register
+        ]
 
     data.append(SR)
     try:

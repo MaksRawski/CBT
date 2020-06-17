@@ -58,9 +58,27 @@ RO=(
     000   #111
 )
 
+# register pair
 RP=(
-    #00
+    [
+        DO|HAI,
+        CO|LAI,
+    ],
 
+    [
+        CO|HAI,
+        BO|LAI,
+    ],
+
+    [
+        BO|HAI,
+        AO|LAI,
+    ],
+
+    [
+        DO|HAI,
+        AO|LAI,
+    ]
 )
 
 DATA=[SR|PCC]*65536

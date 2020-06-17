@@ -242,97 +242,48 @@ def sto(opcode, utime, flags):
     ]
 
     if dst<=0b011:
-        # src = 0 xx 
-        # xx==00 dc
-        # xx==01 cb
-        # xx==10 ba
-        # xx==11 da
-        if dst==0b00:
-            if src==0b111:
-                data=[
-                    MO|ALM|ALE,
+        # normal store
 
-                    DO|HAI,
-                    CO|LAI,
+        # store [rp],imm
+        if src==0b111:
+            data=[
+                MO|ALM|ALE,
 
-                    MI|ALO
-                ]
-            else:
-                data=[
-                    DO|HAI,
-                    CO|LAI,
-                    MI|RO[src]
-                ]
-        elif src==0b01:
-            if src==0b111:
-                data=[
-                    MO|ALM|ALE,
+                RP[dst][0],
+                RP[dst][1],
 
-                    CO|HAI,
-                    BO|LAI,
+                ALO|MI
+            ]
+        # can't read from lcd
+        elif src==0b110:
+            data=[]
 
-                    MI|ALO
-                ]
-            else:
-                data=[
-                    CO|HAI,
-                    BO|LAI,
-                    MI|RO[src]
-                ]
-        elif src==0b10:
-            if src==0b111:
-                data=[
-                    MO|ALM|ALE,
+        # store [rp],src
+        else:
+            data=[
+                RP[dst][0],
+                RP[dst][1],
 
-                    BO|HAI,
-                    AO|LAI,
-
-                    MI|ALO
-                ]
-            else:
-                data=[
-                    BO|HAI,
-                    AO|LAI,
-                    MI|RO[src]
-                ]
-        elif src==0b11:
-            if src==0b111:
-                data=[
-                    MO|ALM|ALE,
-
-                    DO|HAI,
-                    AO|LAI,
-
-                    MI|ALO
-                ]
-            else:
-                data=[
-                    DO|HAI,
-                    AO|LAI,
-                    MI|RO[src]
-                ]
-        
-
-    elif dst==0b111:    
-        data=[
-            LPO|LAI,
-            HPO|HAI|PCC, #first byte provided is now in memory (HMAR)
-
-            MO|ALM|ALE, #save HMAR into alu
-
-            LPO|LAI,
-            HPO|HAI|PCC, #second byte provided is now in memory (LMAR)
-
-            MO|LAI,  #LMAR is now what it's supposed to be
-            ALO|HAI, #HMAR is now what it's supposed to be 
-
-            MI|RO[src] #store src 
-
-        ]
+                MI|RO[src]
+            ]
 
     elif dst==0b100:
+        # push related stores
 
-        if src == 0b111: # push value
+        # push src
+        if src<=0b11:
+            data=[
+                HAI, #set HMAR to 0xff
+                SPO|LAI, #set LMAR to value in SP
+
+                RO[src]|MI, #push the register onto stack 
+
+                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
+                SPI|ALO
+            ]
+
+        # push value
+        elif src==0b111:
             data=[
                 HPO|HAI,
                 LPO|LAI,
@@ -346,9 +297,9 @@ def sto(opcode, utime, flags):
                 SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
                 SPI|ALO
             ]
-
-        elif src == 0b101:
-            #call
+        
+        # call
+        elif src==0b101:
             data=[
                 HAI, #set HMAR to 0xff
                 SPO|LAI, #set LMAR to value in SP
@@ -369,17 +320,31 @@ def sto(opcode, utime, flags):
 
             ]
 
-        
-        else: #push src register
-            data=[
-                HAI, #set HMAR to 0xff
-                SPO|LAI, #set LMAR to value in SP
+        # can't read from lcd
+        elif src==0b110:
+            data=[]
 
-                RO[src]|MI, #push the register onto stack 
+    # can't read from lcd
+    elif dst==0b110:
+        data=[]
 
-                SPO|ALM|AL0|AL1|AL2|AL3|ALE, #decrement SP, S=1111 M=L Cn=H
-                SPI|ALO
-            ]
+    elif dst==0b111:    
+        data=[
+            LPO|LAI,
+            HPO|HAI|PCC, #first byte provided is now in memory (HMAR)
+
+            MO|ALM|ALE, #save HMAR into alu
+
+            LPO|LAI,
+            HPO|HAI|PCC, #second byte provided is now in memory (LMAR)
+
+            MO|LAI,  #LMAR is now what it's supposed to be
+            ALO|HAI, #HMAR is now what it's supposed to be 
+
+            MI|RO[src] #store src 
+
+        ]
+
 
     data.append(SR)
     try:

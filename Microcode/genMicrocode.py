@@ -41,10 +41,14 @@ p=(
 
 for i in range(len(DATA)-1):
     for j in range(4):
+        d = (DATA[i]>>(8*j))&0xff
+
         p[j].write(
-        hex((DATA[i]>>(8*j))&0xff)[2:]
+            hex(d)[2:].zfill(2)
         )
+
         p[j].write(" ")
+
         if (i+1)%16==0:
             p[j].write("\n")
 

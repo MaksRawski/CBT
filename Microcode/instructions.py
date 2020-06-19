@@ -127,15 +127,27 @@ def mov(opcode, utime, flags):
                 HPO|HAI,
                 MO|LPI,
 
-                ALO|HPI
+                ALO|HPI,
+                SR
             ]
+
         else:
             data=[
                 PCC,
-                PCC # skip over the next two bytes which contain destionation address
+                PCC, # skip over the next two bytes which contain destionation address
+                SR, # flags might change (due to saving in alu) therefore jump on flag continues here its execution
+
+                LPO|LAI|PCC,
+                HPO|HAI,
+                MO|LPI,
+
+                ALO|HPI,
+                SR
             ]
-  
-    data.append(SR)
+
+    else:
+        data.append(SR)
+
     try:
         return data[utime]
     except IndexError:

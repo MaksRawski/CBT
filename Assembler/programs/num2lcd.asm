@@ -2,8 +2,6 @@ addr = 0x8000 ; addr of decimal representation of a number
 delimiter = 0xff ; value stored right after the decimal number
 num = 123
 
-zero: #str "0" 
-
 main:
 	mov SP, 0xff
 	mov lcdc,0x1
@@ -42,7 +40,7 @@ toDec:
 		mov a, 10
 
 		push c
-		call div8
+		call div
 		mov a,c ; mov result of division into a
 		pop c
 

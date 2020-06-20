@@ -1,10 +1,3 @@
-; function div8 - divide two 8-bit integers
-;  b: dividend
-;  a: divisor
-; returns:
-;  c: result
-;  b: remainder
-
 #include "cbt.cpu"
 text: #str "8/2=\0"
 main: 
@@ -18,7 +11,7 @@ main:
 
 	mov b,8
 	mov a,2
-	call div8
+	call div
 
 	mov a,48
 	add c
@@ -39,7 +32,7 @@ printStr:
 	.ret:
 		ret
 
-div8:
+div:
 	mov c, 0x00
 	
 	.step:

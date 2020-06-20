@@ -1,86 +1,71 @@
-; code stolen from https://cpu.visualrealmsoftware.com/asm/#
-; binary to decimal lcd example
-; modified to suit cbt instruction set
+addr = 0x8000 ; addr of decimal representation of a number
+delimiter = 0xff ; value stored right after the decimal number
+num = 123
 
-; Convert an 8-bit binary number into decimal digits
-; and output digits to the display
-
-;NUMBER = 135
-;ADDR   = 0
-;TERMINATOR = 255
 zero: #str "0" 
 
 main:
 	mov SP, 0xff
 	mov lcdc,0x1
-	mov lcdc,0xe
+	mov lcdc,0xF
 
-	mov d, 135
-	mov b,d
-	; instruction below could be removed
-	mov a, 0 
+	mov b, num
+	mov [dc],addr
 
-	call toDec8
-	
-	.output:
-		call printResult
-		jmp .output
+	call toDec
 
-printResult:
-    mov lcdc,0x1
-	mov a,0
-	mov b,0xff
-	mov d, 135
-	
-	.findEnd:
-		load Rc, Ra
-		cmp Rb, Rc
-		jz .startPrint
-		inc Ra
-		jmp .findEnd
+	.printingResults
+		load b,[dc]
+		inc c
 
-	.startPrint:
-		data Rc, ADDR
-	
-	.nextDigit:
-		dec Ra
-		lod Rd, Ra
-		data Rb, ZERO
-		add Rd
-		lcd Rd
-		mov Rb, Ra
-		cmp Rb, Rc
-		jz .return
-		jmp .nextDigit
-	
-	.return:
-		ret
+		; if value isn't delimiter print it
+		mov a,delimiter
+		cmp b
+		jz .done
+		
+		mov a,0x30
+		add b
+		mov lcd,b
+		jmp .printingResults
 
+
+	.done
+		halt
 
 ; function toDec - binary to decimal
-;  Rb: number
-;  Ra: memory address to store result. 0xff delimited
-toDec8:
-	push Ra
-	push Rb
-	
+;  b: number
+;  dc: memory address to store result. 0xff delimited
+toDec:
+	push c
+
 	.nextDigit:
-		pop Ra  ; get remaining number
-		data Rb, 10
+		mov a, 10
+
+		push c
 		call div8
-		pop Rb  ; address to Rb
-		sto Rb, Ra ; store remainder
-		inc Rb
-		push Rb  ; push next memory address
-		tst Rc
+		mov a,c ; mov result of division into a
+		pop c
+
+		store [dc],a
+		inc c
+
+		push b
+		mov b,0
+		cmp b ; if the result of division is 0 
+			  ; it means that the number is smaller than 10
+
 		jz .return
-		push Rc
+
+		pop b
 		jmp .nextDigit
 
 	.return:
-		pop Rb
-		data Ra, TERMINATOR  ; add terminator
-		sto Rb, Ra
+		pop b
+
+		store [dc],delimiter
+		pop c
+		; dc is what it was before the function was run
+
 		ret
 
 
@@ -97,18 +82,21 @@ printStr:
 	.ret:
 		ret
 
-div8:
+div:
 	mov c, 0x00
 	
+	.step:
+		cmp b,a
+		;jz .return
+		jc .add ; if there is carry it means there is no borrow therefore we continue subtracting
+		jmp .return
+		
 	.add:
 		inc c
-
-		; b=b-a
-		sub b,a
+		; b = b - a
+		sub b
 		jz .return
-		jc .return
-
-		jmp .add
+		jmp .step
 
 	.return:
 		ret

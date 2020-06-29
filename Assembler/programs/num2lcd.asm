@@ -8,11 +8,11 @@ main:
 	mov lcdc,0xF
 
 	mov b, num
-	mov [dc],addr
+	mov dc,addr
 
 	call toDec
 
-	.printingResults
+	.printingResults:
 		load b,[dc]
 		inc c
 
@@ -27,7 +27,7 @@ main:
 		jmp .printingResults
 
 
-	.done
+	.done:
 		halt
 
 ; function toDec - binary to decimal

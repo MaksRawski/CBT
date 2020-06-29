@@ -1,3 +1,5 @@
+#include "cbt.cpu"
+
 addr = 0x8000 ; addr of decimal representation of a number
 delimiter = 0xff ; value stored right after the decimal number
 num = 123

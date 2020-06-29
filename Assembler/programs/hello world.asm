@@ -6,6 +6,7 @@ main:
 	mov SP, 0xFF
 	
 	; init lcd
+	mov lcdc, 0x1
 	mov lcdc, 0xF
 
 	mov cb, [txt] ; cb becomes pointer to txt

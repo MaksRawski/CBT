@@ -104,11 +104,14 @@
 	;											STORES												   ;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	store [{dst}],{src: reg} 		  -> 0b10 @ 0b111 @ src[2:0] @ dst[15:0]
-	store [{dst: regPair}],{src: reg} -> 0b10 @ 0b0 @ dst[1:0] @ src[2:0]
 
 	store {dst}, {src: reg} 		  -> 0b10 @ 0b111 @ src[2:0] @ dst[15:0]
-	store {dst: regPair},{src: reg}   -> 0b10 @ 0b0 @ dst[1:0] @ src[2:0]
+	store {dst: regPair},{src: reg}   -> 0b10 @ 0b0   @ dst[1:0] @ src[2:0]
+	store {dst: regPair},{src}        -> 0b10 @ 0b0   @ dst[1:0] @ 0b111 @ src[7:0]
+
+	store [{dst}], {src: reg}   		-> 0b10 @ 0b111 @ src[2:0] @ dst[15:0]
+	store [{dst: regPair}],{src: reg}   -> 0b10 @ 0b0   @ dst[1:0] @ src[2:0]
+	store [{dst: regPair}],{src}        -> 0b10 @ 0b0   @ dst[1:0] @ 0b111 @ src[7:0]
 
 	push {dst} 		-> 0b10 @ 0b100 @ 0b111 @ dst[7:0]
 	push {dst: reg} -> 0b10 @ 0b100 @ dst[2:0]

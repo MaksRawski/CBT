@@ -6,7 +6,7 @@ Notable things about my design:
 * 16 bit memory, 1st bit decides whether we are using ROM or RAM,
 * Variable instruction's length, SR (Step Reset) resets step counter once the instruction is done. No wasted cycles! (except NOP),
 * 15 bit program memory,
-* Program memory is stored on replaceable EEPROM which serves as cartridge in some sense,
+* Program memory is stored in esp32 which allows programs to be uploaded remotely,
 * 15 bit RAM,
 * 256B of stack
 * Stack pointer register,
@@ -18,7 +18,5 @@ For documentation about specific parts check out [wiki](https://gitlab.com/i4mz3
 
 ## Finally done!
 ![CBT.jpg](CBT.jpg)
-On the picture it's missing:
-* Stack pointer's LEDS
-* Flags, which aren't yet hooked up to EEPROMS
-* Button to reset all modules
+To the left of the actual CPU is [esp32 which acts as ROM](https://gitlab.com/MaksRawski/esp32-as-rom). 
+It replaced the eariler used EEPROM.

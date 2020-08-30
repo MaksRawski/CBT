@@ -8,75 +8,88 @@ main:
 	mov SP, 0xff
 	mov lcdc,0x1
 	mov lcdc,0xF
+	mov lcdc,0x38
 
 	mov b, num
 	mov dc,addr
-
 	call toDec
 
-	.printingResults:
-		load b,[dc]
-		inc c
-
-		; if value isn't delimiter print it
-		mov a,delimiter
-		cmp b
-		jz .done
+	call printStr
+	mov lcdc, 0x0c
+	halt
+	
 		
-		mov a,0x30
-		add b
-		mov lcd,b
-		jmp .printingResults
-
-
-	.done:
-		halt
 
 ; function toDec - binary to decimal
 ;  b: number
-;  dc: memory address to store result. 0xff delimited
+;  dc: memory address to store result. in that address will be delimiter
+; reading should be backwards, subtracting till you reach the delimiter
+; [dc+1] has the last digit
+; this function will set dc to point at first digit
+
+; TODO check if  div returns correct remainder
 toDec:
-	push c
+	; setup result address
+	push a
+	mov a,delimiter
 
-	.nextDigit:
-		mov a, 10
+	store [dc],a
+	inc c
 
+	mov a,10
+	.while:
 		push c
+		push d
+
 		call div
-		mov a,c ; mov result of division into a
-		pop c
+		; quotient goes to c
+		; remainder goes to b
 
-		store [dc],a
+		; mov remainder to a
+		; mov quotient to b
+		mov a,b
+		mov b,c
+
+		; get address back to dc
+		pop d
+		pop c
+		
+		; store remainder at dc
+		store [dc], a
 		inc c
+		
+		; check if quotient is less than ten
+		; if it is then store it in dc and ret
+		mov a,10
+		cmp b,a
 
-		push b
-		mov b,0
-		cmp b ; if the result of division is 0 
-			  ; it means that the number is smaller than 10
+		; if there is carry it means there is no borrow
+		; therefore quotient is bigger than 10 
+		; and we continue the loop
+		jc .while
 
-		jz .return
-
-		pop b
-		jmp .nextDigit
-
-	.return:
-		pop b
-
-		store [dc],delimiter
-		pop c
-		; dc is what it was before the function was run
-
-		ret
-
+	; else
+	store [dc], b
+	pop a
+	ret
 
 printStr:
-	load d,[cb]
-	inc b ; move pointer to next character
+	; dc has the first digit and we decrement c
+	; until we have delimiter
+
+	load b,[dc]
+	dec c
 	
-	cmp a,d
+	; cmp current character with delimiter
+	mov a,delimiter
+	cmp a,b
 	jz .ret
 
-	mov lcd,d
+	; add 0x30 to convert it to ascii
+	; and print it
+	mov a,0x30
+	add b
+	mov lcd,b
 	jmp printStr
 
 	.ret:

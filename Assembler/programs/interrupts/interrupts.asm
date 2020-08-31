@@ -1,4 +1,3 @@
-#include "cbt.cpu"
 
 no_interrupts: #str "No interrupts received yet!\0"
 recv_intrpt: #str "Received an interrupt for the\0"

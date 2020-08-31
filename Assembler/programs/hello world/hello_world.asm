@@ -1,4 +1,3 @@
-#include "cbt.cpu"
 txt: #str "Hello, world!\0"
 main:
 
@@ -8,6 +7,7 @@ main:
 	; init lcd
 	mov lcdc, 0x1
 	mov lcdc, 0xF
+	mov lcdc, 0x38
 
 	mov cb, [txt] ; cb becomes pointer to txt
 	mov a, 0 ; mov 0 for comparison with current character

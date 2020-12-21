@@ -1,5 +1,5 @@
-text: #str "36/4=\0"
-text1: #str "165/20=\0"
+text: #d "36/4=\0"
+text1: #d "165/20=\0"
 addr = 0x8000
 
 main: 

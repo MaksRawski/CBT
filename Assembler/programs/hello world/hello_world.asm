@@ -1,4 +1,4 @@
-txt: #str "Hello, world!\0"
+txt: #d "Hello, world!\0"
 main:
 
 	;init SP

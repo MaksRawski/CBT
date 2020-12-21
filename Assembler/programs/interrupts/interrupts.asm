@@ -1,7 +1,7 @@
 
-no_interrupts: #str "No interrupts received yet!\0"
-recv_intrpt: #str "Received an interrupt for the\0"
-end_intrpt:  #str "th time\0"
+no_interrupts: #d "No interrupts received yet!\0"
+recv_intrpt: #d "Received an interrupt for the\0"
+end_intrpt:  #d "th time\0"
 
 ; TODO: move cursor to change the number
 

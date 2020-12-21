@@ -1,6 +1,6 @@
 addr = 0x8000 ; addr of decimal representation of a number
 delimiter = 0xff ; value stored right after the decimal number
-num = 123
+num = 255 ; number to display
 
 main:
 	mov SP, 0xff
@@ -15,8 +15,6 @@ main:
 	call printStr
 	mov lcdc, 0x0c
 	halt
-	
-		
 
 ; function toDec - binary to decimal
 ;  b: number
